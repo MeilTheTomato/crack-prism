@@ -7,6 +7,7 @@ __Requirements__ (what this script was tested with)
 - Windows 10 or later
 - Prism Launcher 11.1.1 or later
 - Python 3.14.8 or later
+  - psutil 7.2.2 or later
 
 __Setting up for easy use__ (recommended)
 1. Create a shortcut inside `%appdata%\Microsoft\Windows\Start Menu\Programs`
