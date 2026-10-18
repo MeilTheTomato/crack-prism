@@ -3,6 +3,10 @@ A single python script that allows for making Prism Launcher accessible without 
 
 *THIS SCRIPT NEEDS TO BE RUN EVERY SINGLE TIME YOU OPEN PRISM LAUNCHER.*
 
+__Why use this?__
+
+Unlike having to get a cracked version of Prism Launcher from a non-official source (and also having to update it manually because often those cracked versions don't properly update on their own), you can simply use this script on every startup of the launcher and you're good to go! Updates to the launcher won't modify the script's ability to function, therefore with easy setup (seen in "__Setting up for easy use__" section below), you can seamlessly continue to enjoy Prism Launcher without owning Minecraft.
+
 __Requirements__ (what this script was tested with)
 - Windows 10 or later
 - Prism Launcher 11.1.1 or later
