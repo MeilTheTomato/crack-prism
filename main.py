@@ -67,14 +67,17 @@ def getAccountType(account) -> AccountType:
         case _:
             return AccountType.Unknown
 
+def handleError(error: ErrorType):
+    print(str(error))
+    sys.exit(error)
+
 def openAccountFile(filePath):
     file = None
 
     try:
         file = open(filePath, mode = "r+", encoding = "utf-8")
     except:
-        print(str(ErrorType.NoAccountFile))
-        sys.exit(ErrorType.NoAccountFile)
+        handleError(ErrorType.NoAccountFile)
 
     return file
 
@@ -98,14 +101,12 @@ ACCOUNT_DATA = json.load(ACCOUNT_FILE)
 msaAccountFound = False
 
 if not checkFormatVersionCompatibility(ACCOUNT_DATA):
-    print(str(ErrorType.IncompatibleFormatVersion))
-    sys.exit(ErrorType.IncompatibleFormatVersion)
+    handleError(ErrorType.IncompatibleFormatVersion)
 for account in ACCOUNT_DATA["accounts"]:
     if getAccountType(account) == AccountType.Msa:
         msaAccountFound = True
         enableEntitlement(account)
 if not msaAccountFound:
-    print(str(ErrorType.NoMsaAccount))
-    sys.exit(ErrorType.NoMsaAccount)
+    handleError(ErrorType.NoMsaAccount)
 clearAndWriteToFile(ACCOUNT_FILE, ACCOUNT_DATA)
 openPrismLauncher()
