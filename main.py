@@ -39,6 +39,11 @@ def askBoolean(prompt: str) -> bool:
 
     return (userInput.lower() == "y")
 
+def checkEntitlement(account) -> bool:
+    entitlement = account["entitlement"]
+    
+    return (entitlement["canPlayMinecraft"] and entitlement["ownsMinecraft"])
+
 def checkFormatVersionCompatibility(data) -> bool:
     try:
         SUPPORTED_FORMAT_VERSIONS.index(data["formatVersion"])
@@ -98,6 +103,7 @@ ACCOUNT_FILE = openAccountFile(ACCOUNT_FILE_PATH)
 ACCOUNT_DATA = json.load(ACCOUNT_FILE)
 
 
+fileChangesNeeded = False
 msaAccountFound = False
 
 if not checkFormatVersionCompatibility(ACCOUNT_DATA):
@@ -105,8 +111,11 @@ if not checkFormatVersionCompatibility(ACCOUNT_DATA):
 for account in ACCOUNT_DATA["accounts"]:
     if getAccountType(account) == AccountType.Msa:
         msaAccountFound = True
-        enableEntitlement(account)
+        if not checkEntitlement(account):
+            fileChangesNeeded = True
+            enableEntitlement(account)
 if not msaAccountFound:
     handleError(ErrorType.NoMsaAccount)
-clearAndWriteToFile(ACCOUNT_FILE, ACCOUNT_DATA)
+if fileChangesNeeded:
+    clearAndWriteToFile(ACCOUNT_FILE, ACCOUNT_DATA)
 openPrismLauncher()
