@@ -10,6 +10,9 @@ import time
 ACCOUNT_FILE_PATH = f"{os.getenv("APPDATA")}/PrismLauncher/accounts.json"
 PRISM_LAUNCHER_EXE_PATH = f"{os.getenv("LOCALAPPDATA")}/Programs/PrismLauncher/prismlauncher.exe"
 PRISM_LAUNCHER_PROCESS_NAME = "prismlauncher.exe"
+STATISTICS_TEMPLATE = """Accounts found: {totalAccounts}
+MSA (online) accounts found: {msaAccounts}
+Accounts changed to enable playing Minecraft: {accountsChanged}"""
 SUPPORTED_FORMAT_VERSIONS = [3]
 
 
@@ -31,6 +34,10 @@ class ErrorType(enum.IntEnum):
             case ErrorType.NoMsaAccount:
                 return "No Microsoft Account was found. It doesn't matter whether you own Minecraft or not, please connect any Microsoft account to Prism Launcher."
 
+class Statistics():
+    AccountsChanged: int = 0
+    MsaAccounts: int = 0
+    TotalAccounts: int = 0
 
 def askBoolean(prompt: str) -> bool:
     userInput = ""
@@ -57,6 +64,13 @@ def clearAndWriteToFile(file, data): # (w+ mode doesn't work with the json modul
     file.seek(0)
     json.dump(data, file)
     file.truncate()
+
+def displayStatistics(stats: Statistics):
+    print(STATISTICS_TEMPLATE.format(
+        accountsChanged = stats.AccountsChanged,
+        msaAccounts = stats.MsaAccounts,
+        totalAccounts = stats.TotalAccounts
+    ))
 
 def enableEntitlement(account):
     entitlement = account["entitlement"]
@@ -107,17 +121,23 @@ ACCOUNT_DATA = json.load(ACCOUNT_FILE)
 
 fileChangesNeeded = False
 msaAccountFound = False
+stats = Statistics()
 
 if not checkFormatVersionCompatibility(ACCOUNT_DATA):
     handleError(ErrorType.IncompatibleFormatVersion)
 for account in ACCOUNT_DATA["accounts"]:
+    stats.TotalAccounts += 1
     if getAccountType(account) == AccountType.Msa:
         msaAccountFound = True
+        stats.MsaAccounts += 1
         if not checkEntitlement(account):
             fileChangesNeeded = True
+            stats.AccountsChanged += 1
             enableEntitlement(account)
 if not msaAccountFound:
     handleError(ErrorType.NoMsaAccount)
 if fileChangesNeeded:
     clearAndWriteToFile(ACCOUNT_FILE, ACCOUNT_DATA)
+displayStatistics(stats)
+time.sleep(1)
 openPrismLauncher()
