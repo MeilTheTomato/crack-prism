@@ -4,6 +4,7 @@ import os
 import psutil
 import subprocess
 import sys
+import time
 
 
 ACCOUNT_FILE_PATH = f"{os.getenv("APPDATA")}/PrismLauncher/accounts.json"
@@ -74,6 +75,7 @@ def getAccountType(account) -> AccountType:
 
 def handleError(error: ErrorType):
     print(str(error))
+    time.sleep(2)
     sys.exit(error)
 
 def openAccountFile(filePath):
@@ -93,7 +95,7 @@ def openPrismLauncher():
         input = askBoolean("Prism Launcher needs to relaunch to apply changes, you can relaunch it later if needed. Relaunch now?")
 
         if input:
-            subprocess.run(f"taskkill /im {PRISM_LAUNCHER_PROCESS_NAME}")
+            subprocess.run(f"taskkill /im {PRISM_LAUNCHER_PROCESS_NAME}") # close prism launcher
             os.startfile(PRISM_LAUNCHER_EXE_PATH)
     else:
         os.startfile(PRISM_LAUNCHER_EXE_PATH)
